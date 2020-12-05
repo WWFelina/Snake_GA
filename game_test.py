@@ -58,6 +58,20 @@ class Snake():
             pygame.draw.rect(surface, self.color, r)
             pygame.draw.rect(surface, (105,105, 105), r, 1)
 
+    def random_movement(self, move):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if move == 0:
+            self.turn(up)
+        elif move == 1:
+            self.turn(down)
+        elif move == 2:
+            self.turn(left)
+        elif move == 3:
+            self.turn(right)
+
     def handle_keys(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,38 +108,3 @@ def drawGrid(surface):
         for x in range(0, int(grid_width)):
                 r = pygame.Rect((x*gridsize, y*gridsize), (gridsize,gridsize))
                 pygame.draw.rect(surface,(255,130,66), r)
-
-def main():
-    pygame.init()
-
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((screen_width, screen_height), 0, 32)
-
-    surface = pygame.Surface(screen.get_size())
-    surface = surface.convert()
-    drawGrid(surface)
-
-    snake = Snake()
-    food = Food()
-
-    myfont = pygame.font.SysFont("monospace",32)
-
-    while (True):
-        clock.tick(10)
-        snake.handle_keys()
-        drawGrid(surface)
-        snake.move()
-        if snake.get_head_position() == food.position:
-            snake.length += 1
-            snake.score += 1
-            pygame.mixer.music.load('eat_sound.mp3')
-            pygame.mixer.music.play(0)
-            food.randomize_position()
-        snake.draw(surface)
-        food.draw(surface)
-        screen.blit(surface, (0,0))
-        text = myfont.render("Score {0}".format(snake.score), 1, (0,0,0))
-        screen.blit(text, (5,10))
-        pygame.display.update()
-
-main()
