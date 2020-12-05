@@ -79,10 +79,11 @@ class Food():
         self.position = (random.randint(0, grid_width-1)*gridsize, random.randint(0, grid_height-1)*gridsize)
 
     def draw(self, surface):
-        r = pygame.Rect((self.position[0], self.position[1]), (gridsize, gridsize))
-        pygame.draw.rect(surface, self.color, r)
-        pygame.draw.rect(surface, (86,86,86), r, 2)
-        #pygame.draw.circle(surface, (93, 216, 228), (1,1), 0.1, 1)
+        #r = pygame.Rect((self.position[0], self.position[1]), (gridsize, gridsize))
+        #pygame.draw.rect(surface, self.color, r)
+        #pygame.draw.rect(surface, (86,86,86), r, 2)
+        pygame.draw.circle(surface, (255, 255, 255), (self.position[0]+20, self.position[1]+20), 20)
+        pygame.draw.circle(surface, (86, 86, 86), (self.position[0]+20, self.position[1]+20), 20, 2)
 
 def drawGrid(surface):
     for y in range(0, int(grid_height)):
