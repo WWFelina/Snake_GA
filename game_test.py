@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 
 screen_width = 1280
 screen_height = 720
@@ -36,6 +37,9 @@ class Snake():
         x,y = self.direction
         new = (((cur[0]+(x*gridsize))%screen_width), (cur[1]+(y*gridsize))%screen_height)
         if len(self.positions) > 2 and new in self.positions[2:]:
+            pygame.mixer.music.load('death_sound.mp3')
+            pygame.mixer.music.play(0)
+            time.sleep(1)
             self.reset()
         else:
             self.positions.insert(0,new)
@@ -114,6 +118,8 @@ def main():
         if snake.get_head_position() == food.position:
             snake.length += 1
             snake.score += 1
+            pygame.mixer.music.load('eat_sound.mp3')
+            pygame.mixer.music.play(0)
             food.randomize_position()
         snake.draw(surface)
         food.draw(surface)
