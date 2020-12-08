@@ -18,7 +18,7 @@ right = (1,0)
 class Snake():
     def __init__(self):
         self.length = 1
-        self.positions = [((screen_width/2), (screen_height/2))]
+        self.positions = [[(screen_width/2), (screen_height/2)]]
         self.direction = random.choice([up, down, left, right])
         self.color = (86,86,86)
         self.score = 0
@@ -35,7 +35,7 @@ class Snake():
     def move(self):
         cur = self.get_head_position()
         x,y = self.direction
-        new = (((cur[0]+(x*gridsize))%screen_width), (cur[1]+(y*gridsize))%screen_height)
+        new = [((cur[0]+(x*gridsize))%screen_width), (cur[1]+(y*gridsize))%screen_height]
         if len(self.positions) > 2 and new in self.positions[2:]:
             pygame.mixer.music.load('death_sound.mp3')
             pygame.mixer.music.play(0)
@@ -91,12 +91,12 @@ class Snake():
 
 class Food():
     def __init__(self):
-        self.position = (0,0)
+        self.position = [0,0]
         self.color = (255, 255, 255)
         self.randomize_position()
 
     def randomize_position(self):
-        self.position = (random.randint(0, grid_width-1)*gridsize, random.randint(0, grid_height-1)*gridsize)
+        self.position = [random.randint(0, grid_width-1)*gridsize, random.randint(0, grid_height-1)*gridsize]
 
     def draw(self, surface):
         #r = pygame.Rect((self.position[0], self.position[1]), (gridsize, gridsize))
