@@ -10,15 +10,15 @@ gridsize = 40
 grid_width = screen_width/gridsize
 grid_height = screen_height/gridsize
 
-up = (0,-1)
-down = (0,1)
-left = (-1,0)
-right = (1,0)
+up = [0,-1]
+down = [0,1]
+left = [-1,0]
+right = [1,0]
 
 class Snake():
     def __init__(self):
         self.length = 1
-        self.positions = [[(screen_width/2), (screen_height/2)]]
+        self.positions = [[int(screen_width/2), int(screen_height/2)]]
         self.direction = random.choice([up, down, left, right])
         self.color = (86,86,86)
         self.score = 0
@@ -29,16 +29,32 @@ class Snake():
     def turn(self, point):
         if self.length > 1 and (point[0]*-1, point[1]*-1) == self.direction:
             return
-        else:
+        elif point != [-1*coord for coord in self.direction]:
             self.direction = point
+
+    def check_death(self,head_pos):
+        x,y = self.direction
+        new = [int((head_pos[0]+(x*gridsize))%screen_width), int((head_pos[1]+(y*gridsize))%screen_height)]
+        if len(self.positions) > 2 and new in self.positions[2:]:
+            return 1
+        elif head_pos[0] == 0 and self.direction == left:
+            return 1
+        elif head_pos[1] == 0 and self.direction == up:
+            return 1
+        elif head_pos[0] == screen_width - 40 and self.direction == right:
+            return 1
+        elif head_pos[1] == screen_height - 40 and self.direction == down:
+            return 1
+        else:
+            return 0
 
     def move(self):
         cur = self.get_head_position()
         x,y = self.direction
-        new = [((cur[0]+(x*gridsize))%screen_width), (cur[1]+(y*gridsize))%screen_height]
-        if len(self.positions) > 2 and new in self.positions[2:]:
-            pygame.mixer.music.load('death_sound.mp3')
-            pygame.mixer.music.play(0)
+        new = [int((cur[0]+(x*gridsize))%screen_width), int((cur[1]+(y*gridsize))%screen_height)]
+        if self.check_death(cur):
+            #pygame.mixer.music.load('death_sound.mp3')
+            #pygame.mixer.music.play(0)
             time.sleep(1)
             self.reset()
             return 1
@@ -96,7 +112,8 @@ class Food():
         self.randomize_position()
 
     def randomize_position(self):
-        self.position = [random.randint(0, grid_width-1)*gridsize, random.randint(0, grid_height-1)*gridsize]
+        self.position = [random.randint(1, grid_width-1)*gridsize, random.randint(1, grid_height-1)*gridsize]
+        #self.position = [120,360]
 
     def draw(self, surface):
         #r = pygame.Rect((self.position[0], self.position[1]), (gridsize, gridsize))

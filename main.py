@@ -44,8 +44,8 @@ for j in range(n_generations):
             if snake.get_head_position() == food.position:
                 snake.length += 1
                 snake.score += 1
-                pygame.mixer.music.load('eat_sound.mp3')
-                pygame.mixer.music.play(0)
+                #pygame.mixer.music.load('eat_sound.mp3')
+                #pygame.mixer.music.play(0)
                 food.randomize_position()
             snake.draw(surface)
             food.draw(surface)
