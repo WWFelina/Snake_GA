@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from keras.utils import np_utils
 
 def neural_net(x,y):
-    x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.3, random_state = 42)
+    x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, random_state = 42)
 
     y1 = y_train
     encoder = LabelEncoder()
@@ -46,13 +46,13 @@ def random_forest(x,y):
     return clf
 
 
-x,y = generate_training(25,500)
+x,y = generate_training(10000)
 x = pd.DataFrame(x)
 y = pd.DataFrame(y)
 
-
+model = neural_net(x,y)
 for _ in range(5):
-    model = random_forest(x,y)
+    #model = neural_net(x,y)
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((screen_width, screen_height), 0, 32)
@@ -67,13 +67,13 @@ for _ in range(5):
         clock.tick(30)
         test = [[snake.positions[0][0], snake.positions[0][1],food.position[0],food.position[1]]]
         #move = model.predict_classes(pd.DataFrame(test))
-        move = model.predict(pd.DataFrame(test))
+        move = model.predict_classes(pd.DataFrame(test))
         snake.random_movement(move)
         #snake.handle_keys()
         drawGrid(surface)
-        dead = snake.move()
-        if dead == 1:
-            break
+        snake.move()
+        # == 1 or dead == 2:
+         #   break
         if snake.get_head_position() == food.position:
             snake.length += 1
             snake.score += 1
