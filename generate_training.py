@@ -2,8 +2,30 @@ from game import *
 from model import *
 import time
 
-def hamiltonian_mover(chromosome):
-    return 0
+def hamiltonian_mover(chromosome, snake):
+    head_pos = snake.positions[0]
+    body_pos = snake.positions[1:]
+    food_pos = [chromosome[2], chromosome[3]]
+    move_list = []
+    traversed_tiles = [head_pos]
+    moves = [up, down, left, right]
+    while True:
+        head_pos = traversed_tiles[-1]
+        temp = [-1,-1,-1,-1]
+        for i in range(len(moves)):
+            new = [int((head_pos[0]+(moves[i][0]*gridsize))%screen_width), int((head_pos[1]+(moves[i][1]*gridsize))%screen_height)]
+            if new not in body_pos and new not in traversed_tiles:
+                dist_from_food = abs(new[0] - food_pos[0]) + abs(new[1] - food_pos[1])
+                temp[i] = (dist_from_food)
+        max_turn = temp.index(max(temp))
+        move_list.append(moves[max_turn])
+        made_turn = [int((head_pos[0]+(moves[max_turn][0]*gridsize))%screen_width), int((head_pos[1]+(moves[max_turn][1]*gridsize))%screen_height)]
+        traversed_tiles.append(made_turn)
+        print(moves[max_turn])
+        if max(temp) == 0:
+            return move_list
+            break
+
 
 def greedy_mover(chromosome, direction):
         #If snake is to the left of food and snake is not moving towards or directly away(can't turn 180 degree)
