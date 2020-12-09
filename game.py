@@ -48,6 +48,14 @@ class Snake():
         else:
             return 0
 
+    def almost_death(self,head_pos):
+        x,y = self.direction
+        new = [int((head_pos[0]+(2*x*gridsize))%screen_width), int((head_pos[1]+(2*y*gridsize))%screen_height)]
+        if len(self.positions) > 2 and new in self.positions[2:]:
+            return 1
+        else:
+            return 0
+
     def move(self):
         cur = self.get_head_position()
         x,y = self.direction

@@ -2,29 +2,23 @@ from game import *
 from model import *
 import time
 
-def hamiltonian_mover(chromosome, snake):
+def hamiltonian_mover(chromosome, snake, traversed_tiles):
     head_pos = snake.positions[0]
     body_pos = snake.positions[1:]
     food_pos = [chromosome[2], chromosome[3]]
-    move_list = []
-    traversed_tiles = [head_pos]
     moves = [up, down, left, right]
-    while True:
-        head_pos = traversed_tiles[-1]
-        temp = [-1,-1,-1,-1]
-        for i in range(len(moves)):
-            new = [int((head_pos[0]+(moves[i][0]*gridsize))%screen_width), int((head_pos[1]+(moves[i][1]*gridsize))%screen_height)]
-            if new not in body_pos and new not in traversed_tiles:
-                dist_from_food = abs(new[0] - food_pos[0]) + abs(new[1] - food_pos[1])
-                temp[i] = (dist_from_food)
-        max_turn = temp.index(max(temp))
-        move_list.append(moves[max_turn])
-        made_turn = [int((head_pos[0]+(moves[max_turn][0]*gridsize))%screen_width), int((head_pos[1]+(moves[max_turn][1]*gridsize))%screen_height)]
-        traversed_tiles.append(made_turn)
-        print(moves[max_turn])
-        if max(temp) == 0:
-            return move_list
-            break
+
+    head_pos = traversed_tiles[-1]
+    temp = [-1,-1,-1,-1]
+    for i in range(len(moves)):
+        new = [int((head_pos[0]+(moves[i][0]*gridsize))%screen_width), int((head_pos[1]+(moves[i][1]*gridsize))%screen_height)]
+        if new not in body_pos and new not in traversed_tiles:
+            dist_from_food = abs(new[0] - food_pos[0]) + abs(new[1] - food_pos[1])
+            temp[i] = (dist_from_food)
+    max_turn = temp.index(max(temp))
+    made_turn = [int((head_pos[0]+(moves[max_turn][0]*gridsize))%screen_width), int((head_pos[1]+(moves[max_turn][1]*gridsize))%screen_height)]
+    traversed_tiles.append(made_turn)
+    return moves[max_turn], traversed_tiles
 
 
 def greedy_mover(chromosome, direction):
@@ -82,6 +76,8 @@ def generate_training(n_samples, moves_per_sample):
         snake = Snake()
         food = Food()
 
+        traversed_tiles = [snake.positions[0]]
+
         chromosome = [snake.positions[0][0], snake.positions[0][1],food.position[0],food.position[1]]
         for _ in range(moves_per_sample):
             time.sleep(0.1)
@@ -93,10 +89,15 @@ def generate_training(n_samples, moves_per_sample):
                     snake.random_movement(move)
                     training_y.append(move)
                 else:
-                    move = hamiltonian_mover(chromosome)
-                    snake.random_movement(move)
+                    move,traversed_tiles = hamiltonian_mover(chromosome,snake,traversed_tiles)
+                    expected = [snake.positions[0][0]+40*move[0], snake.positions[0][1]+40*move[1]]
+                    temp = snake.direction
+                    snake.direction = move
+                    if snake.check_death(expected):
+                        snake.direction = temp
+                        move = snake.direction
+                    snake.turn(move)
                     training_y.append(move)
-
             snake.move()
             if snake.get_head_position() == food.position:
                 snake.length += 1
@@ -104,6 +105,7 @@ def generate_training(n_samples, moves_per_sample):
                 #pygame.mixer.music.load('eat_sound.mp3')
                 #pygame.mixer.music.play(0)
                 food.randomize_position()
+                traversed_tiles = [snake.positions[0]]
             snake.draw(surface)
             food.draw(surface)
             chromosome = [snake.positions[0][0], snake.positions[0][1],food.position[0],food.position[1]]
