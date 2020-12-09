@@ -33,10 +33,11 @@ class Snake():
             self.direction = point
 
     def check_death(self,head_pos):
+        cur = head_pos
         x,y = self.direction
-        new = [int((head_pos[0]+(x*gridsize))%screen_width), int((head_pos[1]+(y*gridsize))%screen_height)]
+        new = [((cur[0]+(x*gridsize))%screen_width), (cur[1]+(y*gridsize))%screen_height]
         if len(self.positions) > 2 and new in self.positions[2:]:
-            return 1
+            return 2
         elif head_pos[0] == 0 and self.direction == left:
             return 1
         elif head_pos[1] == 0 and self.direction == up:
@@ -48,19 +49,26 @@ class Snake():
         else:
             return 0
 
-    def almost_death(self,head_pos):
-        x,y = self.direction
-        new = [int((head_pos[0]+(2*x*gridsize))%screen_width), int((head_pos[1]+(2*y*gridsize))%screen_height)]
-        if len(self.positions) > 2 and new in self.positions[2:]:
-            return 1
-        else:
+    def check_eat(self, head_pos):
+        moves = [up, down, left, right]
+        not_allowed = []
+        for i in range(len(moves)):
+            
+            new = [int((head_pos[0]+(moves[i][0]*gridsize))%screen_width), int((head_pos[1]+(moves[i][1]*gridsize))%screen_height)]
+            if new in self.positions[2:]:
+                not_allowed.append(moves[i])
+        if len(not_allowed) == 0:
             return 0
+        else:
+            return not_allowed
+                
+
 
     def move(self):
         cur = self.get_head_position()
         x,y = self.direction
         new = [int((cur[0]+(x*gridsize))%screen_width), int((cur[1]+(y*gridsize))%screen_height)]
-        if self.check_death(cur):
+        if self.check_death(cur) == 1 or self.check_death(cur) == 2:
             #pygame.mixer.music.load('death_sound.mp3')
             #pygame.mixer.music.play(0)
             time.sleep(1)
@@ -135,3 +143,4 @@ def drawGrid(surface):
         for x in range(0, int(grid_width)):
                 r = pygame.Rect((x*gridsize, y*gridsize), (gridsize,gridsize))
                 pygame.draw.rect(surface,(255,130,66), r)
+
