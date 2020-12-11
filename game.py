@@ -19,7 +19,7 @@ class Snake():
     def __init__(self):
         self.length = 1
         self.positions = [[int(screen_width/2), int(screen_height/2)]]
-        self.direction = random.choice([up, down, left, right])
+        self.direction = right
         self.color = (86,86,86)
         self.score = 0
 
@@ -125,7 +125,7 @@ class Food():
     def __init__(self):
         self.position = [0,0]
         self.color = (255, 255, 255)
-        self.randomize_position()
+        self.position = [random.randint(grid_width//2, grid_width-1)*gridsize, random.randint(1, grid_height-1)*gridsize]
 
     def randomize_position(self):
         self.position = [random.randint(1, grid_width-1)*gridsize, random.randint(1, grid_height-1)*gridsize]

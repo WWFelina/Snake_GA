@@ -1,7 +1,7 @@
 from game import *
 from model import *
 import time
-
+import csv
 
 def greedy_mover(chromosome, direction):
         #If snake is to the left of food and snake is not moving towards or directly away(can't turn 180 degree)
@@ -37,7 +37,7 @@ def prevent_death(snake,chromosome):
                 snake.turn(move)
                 return 1, move
             
-    if snake.check_death(pos) == 1:
+    if snake.check_death(pos) == 1 or snake.check_death(pos) == 2:
         if snake.direction == up or snake.direction == down:
             if pos[0] < chromosome[2]:
                 snake.turn(right)
@@ -69,10 +69,10 @@ def generate_training(moves_per_sample):
     drawGrid(surface)
     snake = Snake()
     food = Food()
-
+    score_list = []
     chromosome = [snake.positions[0][0], snake.positions[0][1],food.position[0],food.position[1]]
     for _ in range(moves_per_sample):
-        #time.sleep(0.1)
+        #time.sleep(0.2)
         drawGrid(surface)
         training_x.append(chromosome)
         dead, move = prevent_death(snake,chromosome)
@@ -89,8 +89,10 @@ def generate_training(moves_per_sample):
                 training_y.append(2)
             else:
                 training_y.append(3)
-            
-        snake.move()
+        score = snake.score   
+        death = snake.move()
+        if death:
+            score_list.append(score)
         if snake.get_head_position() == food.position:
             snake.length += 1
             snake.score += 1
@@ -102,7 +104,16 @@ def generate_training(moves_per_sample):
         chromosome = [snake.positions[0][0], snake.positions[0][1],food.position[0],food.position[1]]
         screen.blit(surface, (0,0))
         pygame.display.update()
-    return training_x, training_y
+    score_list.append(score)
+    return training_x, training_y,score_list
 
-x, y = generate_training(1000)
-print(len(x),len(y))
+x, y,score_list = generate_training(50000)
+
+print(f"The snake played {len(score_list)} games")
+print(f"The average score achieved by the snake was {sum(score_list)/(len(score_list))}")
+
+with open('data.csv','w', newline='') as f:
+    for i in range(len(x)):
+        write = csv.writer(f)
+        write.writerow(x[i]+[y[i]])
+

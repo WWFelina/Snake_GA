@@ -20,7 +20,7 @@ n_chromosomes = 25
 chromosomes = []
 for _ in range(n_chromosomes):
     chromosome = []
-    for _ in range(500):
+    for _ in range(5000):
         chromosome.append(random.randint(0,4))
     chromosomes.append(chromosome)
 
